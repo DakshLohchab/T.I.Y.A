@@ -5,8 +5,7 @@ from PyQt5.QtCore import QTimer
 
 # Import your custom modules
 from login import TIYALogin
-from api_setup import APISetupWindow
-from main_assistant import TIYAMainAssistant
+from main_assistant import EnhancedTIYAAssistant
 from firebase_manager import firebase_manager
 
 class TIYAApplication:
@@ -140,7 +139,7 @@ class TIYAApplication:
         if self.login_window:
             self.login_window.close()
         
-        self.assistant_window = TIYAMainAssistant(
+        self.assistant_window = EnhancedTIYAAssistant(
             api_key=self.api_key,
             username=self.current_user.title()
         )

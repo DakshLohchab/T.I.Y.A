@@ -129,7 +129,8 @@ class APISetupWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("TIYA - API Configuration")
-        self.setFixedSize(800, 600)
+        self.setMinimumSize(800, 550)
+        self.resize(800, 550)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         
@@ -155,18 +156,18 @@ class APISetupWindow(QWidget):
         
         # Main layout
         main_layout = QVBoxLayout(main_frame)
-        main_layout.setContentsMargins(50, 40, 50, 40)
-        main_layout.setSpacing(25)
+        main_layout.setContentsMargins(40, 30, 40, 30)
+        main_layout.setSpacing(20)
         
         # Header
         header_layout = QVBoxLayout()
-        header_layout.setSpacing(10)
+        header_layout.setSpacing(8)
         
-        title = QLabel("NEURAL NETWORK CONFIGURATION")
+        title = QLabel("🚀 T.I.Y.A Setup")
         title.setObjectName("title")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
-        subtitle = QLabel("Configure your Gemini API key to enable T.I.Y.A.'s cognitive capabilities")
+        subtitle = QLabel("Connect your Gemini API to unlock T.I.Y.A.'s full potential")
         subtitle.setObjectName("subtitle")
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
@@ -179,37 +180,50 @@ class APISetupWindow(QWidget):
         api_layout = QVBoxLayout(api_section)
         api_layout.setSpacing(15)
         
-        api_label = QLabel("GEMINI API KEY:")
+        # API Key header with icon
+        header_layout = QHBoxLayout()
+        api_icon = QLabel("🔑")
+        api_icon.setObjectName("apiIcon")
+        api_label = QLabel("Gemini API Key")
         api_label.setObjectName("fieldLabel")
         
-        self.api_input = QLineEdit()
-        self.api_input.setPlaceholderText("Enter your Gemini API key here...")
-        self.api_input.setEchoMode(QLineEdit.EchoMode.Password)
+        header_layout.addWidget(api_icon)
+        header_layout.addWidget(api_label)
+        header_layout.addStretch()
         
-        # Show/Hide API key checkbox
-        self.show_key_checkbox = QCheckBox("Show API Key")
+        # Input container for better styling
+        input_container = QFrame()
+        input_container.setObjectName("inputContainer")
+        input_layout = QVBoxLayout(input_container)
+        input_layout.setContentsMargins(15, 15, 15, 15)
+        input_layout.setSpacing(10)
+        
+        self.api_input = QLineEdit()
+        self.api_input.setPlaceholderText("Paste your Gemini API key here...")
+        self.api_input.setEchoMode(QLineEdit.EchoMode.Password)
+        self.api_input.setObjectName("apiInput")
+        self.api_input.setMinimumHeight(45)
+        
+        # Show/Hide API key checkbox with better styling
+        checkbox_layout = QHBoxLayout()
+        self.show_key_checkbox = QCheckBox("👁️ Show API Key")
         self.show_key_checkbox.setObjectName("checkbox")
         self.show_key_checkbox.toggled.connect(self.toggle_api_visibility)
         
-        # Instructions
-        instructions = QTextEdit()
-        instructions.setObjectName("instructions")
-        instructions.setMaximumHeight(120)
-        instructions.setHtml("""
-        <div style='color: #00f7ff; font-family: "Courier New"; font-size: 11px;'>
-        <b>How to get your Gemini API Key:</b><br>
-        1. Visit <span style='color: #ffffff;'>https://makersuite.google.com/app/apikey</span><br>
-        2. Sign in with your Google account<br>
-        3. Click "Create API Key" and copy the generated key<br>
-        4. Paste it above and click "VALIDATE & SAVE"
-        </div>
-        """)
-        instructions.setReadOnly(True)
+        # Help text
+        help_text = QLabel("💡 Need an API key? Visit Google AI Studio to get yours for free")
+        help_text.setObjectName("helpText")
+        help_text.setWordWrap(True)
         
-        api_layout.addWidget(api_label)
-        api_layout.addWidget(self.api_input)
-        api_layout.addWidget(self.show_key_checkbox)
-        api_layout.addWidget(instructions)
+        checkbox_layout.addWidget(self.show_key_checkbox)
+        checkbox_layout.addStretch()
+        
+        input_layout.addWidget(self.api_input)
+        input_layout.addLayout(checkbox_layout)
+        input_layout.addWidget(help_text)
+        
+        api_layout.addLayout(header_layout)
+        api_layout.addWidget(input_container)
         
         # Status
         self.status_label = QLabel("")
@@ -220,19 +234,18 @@ class APISetupWindow(QWidget):
         button_layout = QHBoxLayout()
         button_layout.setSpacing(20)
         
-        self.validate_btn = GlowingButton("VALIDATE & SAVE")
+        self.validate_btn = GlowingButton("🔒 Validate & Save API Key")
         self.validate_btn.clicked.connect(self.validate_and_save_api)
         
-        self.skip_btn = GlowingButton("SKIP FOR NOW", "#ff6b6b")
-        self.skip_btn.clicked.connect(self.skip_setup)
-        
-        self.continue_btn = GlowingButton("CONTINUE TO TIYA", "#00ff88")
+        self.continue_btn = GlowingButton("✨ Launch T.I.Y.A", "#00ff88")
         self.continue_btn.clicked.connect(self.continue_to_main)
         self.continue_btn.setVisible(False)
         
+        # Center the buttons
+        button_layout.addStretch()
         button_layout.addWidget(self.validate_btn)
-        button_layout.addWidget(self.skip_btn)
         button_layout.addWidget(self.continue_btn)
+        button_layout.addStretch()
         
         # Footer
         footer = QLabel("T.I.Y.A. TRANSCENDENCE PROTOCOL v3.14")
@@ -241,10 +254,10 @@ class APISetupWindow(QWidget):
         
         # Add to main layout
         main_layout.addLayout(header_layout)
-        main_layout.addSpacing(20)
+        main_layout.addSpacing(15)
         main_layout.addWidget(api_section)
         main_layout.addWidget(self.status_label)
-        main_layout.addSpacing(20)
+        main_layout.addSpacing(15)
         main_layout.addLayout(button_layout)
         main_layout.addStretch()
         main_layout.addWidget(footer)
@@ -254,114 +267,167 @@ class APISetupWindow(QWidget):
     def get_stylesheet(self):
         return """
             QFrame#mainFrame {
-                background: rgba(10, 15, 25, 200);
-                border: 1px solid rgba(0, 247, 255, 50);
-                border-radius: 15px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                    stop:0 rgba(15, 20, 35, 220), 
+                    stop:1 rgba(25, 30, 45, 220));
+                border: 2px solid rgba(0, 247, 255, 100);
+                border-radius: 20px;
             }
             
             QFrame#section {
-                background: rgba(0, 0, 0, 100);
-                border: 1px solid rgba(0, 247, 255, 80);
-                border-radius: 10px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                    stop:0 rgba(5, 15, 25, 150), 
+                    stop:1 rgba(15, 25, 35, 150));
+                border: 1px solid rgba(0, 247, 255, 120);
+                border-radius: 15px;
                 padding: 20px;
             }
             
+            QFrame#inputContainer {
+                background: rgba(0, 0, 0, 80);
+                border: 1px solid rgba(0, 247, 255, 60);
+                border-radius: 12px;
+                padding: 5px;
+            }
+            
             QLabel#title {
-                font-family: 'Orbitron', sans-serif;
+                font-family: 'Segoe UI', 'Arial', sans-serif;
                 font-size: 28px;
                 font-weight: bold;
                 color: #ffffff;
-                text-shadow: 0 0 20px #00f7ff;
-                letter-spacing: 3px;
+                text-shadow: 0 0 25px #00f7ff;
+                letter-spacing: 2px;
+                padding: 8px;
             }
             
             QLabel#subtitle {
-                font-family: 'Courier New', monospace;
-                font-size: 12px;
-                color: rgba(0, 247, 255, 180);
+                font-family: 'Segoe UI', 'Arial', sans-serif;
+                font-size: 14px;
+                color: rgba(0, 247, 255, 200);
                 font-style: italic;
+                padding: 5px;
+            }
+            
+            QLabel#apiIcon {
+                font-size: 24px;
+                padding: 5px;
             }
             
             QLabel#fieldLabel {
-                font-family: 'Courier New', monospace;
-                font-size: 12px;
+                font-family: 'Segoe UI', 'Arial', sans-serif;
+                font-size: 16px;
                 font-weight: bold;
-                color: rgba(0, 247, 255, 180);
+                color: #ffffff;
+                padding: 5px;
+            }
+            
+            QLabel#helpText {
+                font-family: 'Segoe UI', 'Arial', sans-serif;
+                font-size: 11px;
+                color: rgba(0, 247, 255, 150);
+                font-style: italic;
+                padding: 5px;
             }
             
             QLabel#statusLabel {
-                font-family: 'Courier New', monospace;
-                font-size: 12px;
+                font-family: 'Segoe UI', 'Arial', sans-serif;
+                font-size: 13px;
                 font-weight: bold;
-                padding: 10px;
-                border-radius: 5px;
+                padding: 15px;
+                border-radius: 8px;
+                margin: 10px;
             }
             
             QLabel#footer {
                 font-family: 'Courier New', monospace;
                 font-size: 9px;
-                color: rgba(0, 247, 255, 100);
+                color: rgba(0, 247, 255, 80);
             }
             
-            QLineEdit {
-                background: rgba(0, 0, 0, 150);
-                border: 1px solid rgba(0, 247, 255, 80);
+            QLineEdit#apiInput {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                    stop:0 rgba(0, 10, 20, 180), 
+                    stop:1 rgba(0, 20, 30, 180));
+                border: 2px solid rgba(0, 247, 255, 100);
                 border-radius: 8px;
                 padding: 12px 15px;
-                color: #e0ffff;
+                color: #ffffff;
                 font-size: 14px;
-                font-family: 'Courier New', monospace;
+                font-family: 'Segoe UI', 'Arial', sans-serif;
+                font-weight: 500;
+                min-height: 20px;
             }
             
-            QLineEdit:focus {
-                border: 1px solid #00f7ff;
-                background: rgba(0, 20, 30, 150);
+            QLineEdit#apiInput:focus {
+                border: 2px solid #00f7ff;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                    stop:0 rgba(0, 20, 35, 200), 
+                    stop:1 rgba(0, 35, 50, 200));
+                box-shadow: 0 0 15px rgba(0, 247, 255, 50);
             }
             
-            QLineEdit::placeholder {
-                color: rgba(0, 247, 255, 100);
-            }
-            
-            QTextEdit#instructions {
-                background: rgba(0, 0, 0, 100);
-                border: 1px solid rgba(0, 247, 255, 50);
-                border-radius: 5px;
-                padding: 10px;
+            QLineEdit#apiInput::placeholder {
+                color: rgba(0, 247, 255, 120);
+                font-style: italic;
             }
             
             QCheckBox#checkbox {
                 color: rgba(0, 247, 255, 180);
-                font-family: 'Courier New', monospace;
-                font-size: 11px;
+                font-family: 'Segoe UI', 'Arial', sans-serif;
+                font-size: 12px;
+                font-weight: 500;
+                padding: 5px;
             }
             
             QCheckBox#checkbox::indicator {
-                width: 15px;
-                height: 15px;
-                border: 1px solid rgba(0, 247, 255, 80);
-                border-radius: 3px;
-                background: rgba(0, 0, 0, 100);
+                width: 18px;
+                height: 18px;
+                border: 2px solid rgba(0, 247, 255, 100);
+                border-radius: 4px;
+                background: rgba(0, 0, 0, 120);
             }
             
             QCheckBox#checkbox::indicator:checked {
-                background: #00f7ff;
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:1, 
+                    stop:0 #00f7ff, stop:1 #008c9e);
+                border: 2px solid #00f7ff;
+            }
+            
+            QCheckBox#checkbox::indicator:hover {
+                border: 2px solid #00f7ff;
+                background: rgba(0, 247, 255, 20);
             }
             
             QPushButton {
-                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #00f7ff, stop:1 #008c9e);
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, 
+                    stop:0 #00f7ff, stop:1 #008c9e);
                 color: #05080f;
                 border: none;
-                border-radius: 8px;
+                border-radius: 10px;
                 font-weight: bold;
-                font-size: 14px;
-                font-family: 'Orbitron', sans-serif;
+                font-size: 13px;
+                font-family: 'Segoe UI', 'Arial', sans-serif;
                 padding: 12px 25px;
                 letter-spacing: 1px;
+                min-height: 20px;
             }
             
             QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ffffff, stop:1 #00f7ff);
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, 
+                    stop:0 #ffffff, stop:1 #00f7ff);
                 color: #000000;
+                transform: translateY(-2px);
+            }
+            
+            QPushButton:pressed {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, 
+                    stop:0 #008c9e, stop:1 #00f7ff);
+                transform: translateY(1px);
+            }
+            
+            QPushButton:disabled {
+                background: rgba(100, 100, 100, 100);
+                color: rgba(255, 255, 255, 100);
             }
         """
     
@@ -378,12 +444,12 @@ class APISetupWindow(QWidget):
             self.show_status("ERROR: API key cannot be empty", "error")
             return
         
-        self.status_label.setText("● VALIDATING API KEY...")
+        self.status_label.setText("⏳ Validating API key...")
         self.status_label.setStyleSheet("color: #ffff00; text-shadow: 0 0 8px #ffff00;")
         
         # Disable button during validation
         self.validate_btn.setEnabled(False)
-        self.validate_btn.setText("VALIDATING...")
+        self.validate_btn.setText("🔄 Validating...")
         
         # Start validation thread
         self.validation_thread = APIValidationThread(api_key)
@@ -393,7 +459,7 @@ class APISetupWindow(QWidget):
     def handle_validation_result(self, is_valid, message):
         """Handle the result of API validation"""
         self.validate_btn.setEnabled(True)
-        self.validate_btn.setText("VALIDATE & SAVE")
+        self.validate_btn.setText("🔒 Validate & Save API Key")
         
         if is_valid:
             api_key = self.api_input.text().strip()
@@ -410,7 +476,6 @@ class APISetupWindow(QWidget):
                 
                 self.show_status(f"✓ {message.upper()}", "success")
                 self.validate_btn.setVisible(False)
-                self.skip_btn.setVisible(False)
                 self.continue_btn.setVisible(True)
                 
             except Exception as e:
@@ -427,18 +492,6 @@ class APISetupWindow(QWidget):
         else:
             self.status_label.setStyleSheet("color: #ffff00; text-shadow: 0 0 8px #ffff00;")
     
-    def skip_setup(self):
-        reply = QMessageBox.question(
-            self, 
-            "Skip API Setup",
-            "T.I.Y.A. will have limited capabilities without an API key.\n\nAre you sure you want to continue?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No
-        )
-        
-        if reply == QMessageBox.StandardButton.Yes:
-            self.continue_to_main()
-    
     def continue_to_main(self):
         api_key = self.load_api_key()
         self.api_configured.emit(api_key or "")
@@ -452,7 +505,7 @@ class APISetupWindow(QWidget):
                     if config.get('configured') and config.get('gemini_api_key'):
                         self.api_input.setText(config['gemini_api_key'])
                         self.show_status("✓ EXISTING CONFIGURATION FOUND", "success")
-                        self.validate_btn.setText("UPDATE & SAVE")
+                        self.validate_btn.setText("🔄 Update & Save API Key")
                         self.continue_btn.setVisible(True)
         except Exception as e:
             print(f"Error loading config: {e}")
@@ -468,13 +521,14 @@ class APISetupWindow(QWidget):
         return ''
     
     def mousePressEvent(self, event):
-        self.oldPos = event.globalPos()
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.oldPos = event.globalPosition().toPoint()
     
     def mouseMoveEvent(self, event):
-        if hasattr(self, 'oldPos'):
-            delta = event.globalPos() - self.oldPos
+        if hasattr(self, 'oldPos') and event.buttons() == Qt.MouseButton.LeftButton:
+            delta = event.globalPosition().toPoint() - self.oldPos
             self.move(self.x() + delta.x(), self.y() + delta.y())
-            self.oldPos = event.globalPos()
+            self.oldPos = event.globalPosition().toPoint()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
